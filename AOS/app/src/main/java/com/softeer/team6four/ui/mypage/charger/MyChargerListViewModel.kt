@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softeer.team6four.data.Resource
-import com.softeer.team6four.data.local.UserPreferencesRepository
-import com.softeer.team6four.data.remote.charger.ChargerRepository
-import com.softeer.team6four.data.remote.charger.model.MyChargerSimpleInfoModel
+import com.softeer.team6four.data.UserPreferencesRepository
+import com.softeer.team6four.data.ChargerRepository
+import com.softeer.team6four.data.remote.charger.model.MyChargerListModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

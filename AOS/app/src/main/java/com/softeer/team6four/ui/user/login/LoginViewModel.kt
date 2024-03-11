@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softeer.team6four.data.Resource
-import com.softeer.team6four.data.local.UserPreferencesRepository
-import com.softeer.team6four.data.remote.user.UserRepository
+import com.softeer.team6four.data.UserPreferencesRepository
+import com.softeer.team6four.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,9 +47,9 @@ class LoginViewModel @Inject constructor(
     fun requestLogin() {
         viewModelScope.launch {
             userRepository.requestLogin(email.value, password.value).collect { userLoginModel ->
+                updateLoginState()
                 when (userLoginModel) {
                     is Resource.Success -> {
-                        _loginState.value = true
                         _loginEmailFailState.value = false
                         _loginPasswordFailState.value = false
 
@@ -62,7 +62,6 @@ class LoginViewModel @Inject constructor(
 
                     is Resource.Error -> {
                         Log.e("LogIn error", userLoginModel.message)
-                        _loginState.value = false
                         if (userLoginModel.code == 404) {
                             _loginEmailFailState.value = true
                             _loginPasswordFailState.value = false
@@ -74,7 +73,6 @@ class LoginViewModel @Inject constructor(
                     }
 
                     else -> {
-                        _loginState.value = false
                         _loginEmailFailState.value = false
                         _loginPasswordFailState.value = false
                     }
@@ -91,9 +89,5 @@ class LoginViewModel @Inject constructor(
             }
             Log.d("accessToken", accessToken.first())
         }
-    }
-
-    fun initLoginResult() {
-        _loginState.value = false
     }
 }
