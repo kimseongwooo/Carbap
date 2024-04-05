@@ -14,17 +14,12 @@ class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     class PointHistoryViewHolder(private val binding: PointHistoryItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(detailModel: PointHistoryDetailModel) {
-            binding.tvPointChargeDate.text = detailModel.createdDate
-            binding.tvChargerTitle.text = detailModel.pointTitle
-            binding.tvChargerPrice.text = detailModel.amount
+            binding.model = detailModel
         }
     }
 
-    class LoadingViewHolder(private val binding: ProgressBarItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-    }
-
+    class LoadingViewHolder(binding: ProgressBarItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
     override fun getItemViewType(position: Int): Int {
         return when (pointHistoryList[position].paymentId) {
             0 -> VIEW_TYPE_LOADING
@@ -39,6 +34,7 @@ class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 val binding = PointHistoryItemBinding.inflate(layoutInflater, parent, false)
                 PointHistoryViewHolder(binding)
             }
+
             else -> {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ProgressBarItemBinding.inflate(layoutInflater, parent, false)
@@ -75,12 +71,13 @@ class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun setProgressbar(refreshState: Boolean) {
-        if(refreshState) pointHistoryList.clear()
-        pointHistoryList.add(PointHistoryDetailModel
-            ("", "", 0, "", "", 0))
+        if (refreshState) pointHistoryList.clear()
+        pointHistoryList.add(
+            PointHistoryDetailModel
+                ("", "", 0, "", "", 0)
+        )
         notifyDataSetChanged()
         Log.d("setProgressbar", "true")
-
     }
 
 
