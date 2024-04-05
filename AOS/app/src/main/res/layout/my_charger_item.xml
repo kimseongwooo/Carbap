@@ -4,6 +4,9 @@
 
     <data>
 
+        <variable
+            name="model"
+            type="com.softeer.team6four.data.remote.charger.model.MyChargerSimpleInfoModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,6 +32,7 @@
             android:id="@+id/tv_my_charger_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{model.nickname}"
             android:textColor="@color/gray_700"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -51,6 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
+            android:text="@{model.address}"
             android:textColor="@color/gray_600"
             app:layout_constraintStart_toEndOf="@id/iv_my_charger_location_icon"
             app:layout_constraintTop_toBottomOf="@id/tv_my_charger_nickname" />
@@ -60,6 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/charger_location_description"
+            android:src="@{model.reservationCount == 0 ? @drawable/icon_empty_reservation : @drawable/icon_reservation}"
             app:layout_constraintBottom_toBottomOf="@id/tv_my_charger_reservation"
             app:layout_constraintStart_toStartOf="@id/start_guide_line"
             app:layout_constraintTop_toTopOf="@id/tv_my_charger_reservation" />
@@ -70,6 +76,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
+            android:text='@{"신규예약 " + String.valueOf(model.reservationCount) + "건"}'
+            android:textColor="@{model.reservationCount == 0 ? @color/gray_500 : @color/main_400}"
             app:layout_constraintStart_toEndOf="@id/iv_my_charger_reservation_icon"
             app:layout_constraintTop_toBottomOf="@id/tv_my_charger_location" />
 
@@ -79,6 +87,7 @@
             android:layout_height="44dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
+            imageUrl="@{model.imageUrl}"
             android:src="@drawable/charger_default_image"
             app:layout_constraintBottom_toBottomOf="@id/tv_my_charger_reservation"
             app:layout_constraintEnd_toEndOf="@id/end_guide_line"
