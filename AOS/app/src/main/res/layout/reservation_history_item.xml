@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="model"
+            type="com.softeer.team6four.data.remote.reservation.model.ReservationInfoModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,41 +42,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="붕붕이밥 2"
+            android:text="@{model.carbobNickname}"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="@id/start_guide_line"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_reservation_state"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="8dp"
-            android:paddingVertical="4dp"
-            app:chipMinHeight="0dp"
-            app:chipEndPadding="3dp"
-            app:chipStartPadding="3dp"
+            setChipBackgroundColor="@{model.stateType}"
+            setChipText="@{model.stateType}"
+            setChipTextColor="@{model.stateType}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:paddingVertical="4dp"
+            android:textColor="@color/white"
             android:textSize="11sp"
             android:textStyle="bold"
+            app:chipBackgroundColor="@color/main_400"
+            app:chipCornerRadius="20dp"
+            app:chipEndPadding="3dp"
+            app:chipMinHeight="0dp"
+            app:chipStartPadding="3dp"
             app:layout_constraintStart_toEndOf="@id/tv_reservation_charger_nickname"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="사용완료"
-            android:textColor="@color/white"
-            app:chipBackgroundColor="@color/main_400"
-            app:chipCornerRadius="20dp" />
+            tool:text="사용완료" />
 
         <TextView
             android:id="@+id/tv_reservation_total_fee"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="3,400원"
+            android:text='@{String.valueOf(model.totalFee) + "원"}'
+            android:textColor="@color/main_400"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/main_400"
             app:layout_constraintEnd_toStartOf="@id/end_guide_line"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -82,7 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="4dp"
-            android:text="2024.02.12 | 13:00-15:00"
+            android:text="@{model.reservationTimeStr}"
+            tool:text="2024.02.12 | 13:00-15:00"
             android:textColor="@color/gray_600"
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@id/iv_calendar_icon"
@@ -93,9 +101,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="운전면허시험장 뉴규 앞도로 394-4"
-            android:textSize="14sp"
+            tool:text="운전면허시험장 뉴규 앞도로 394-4"
+            android:text="@{model.address}"
             android:textColor="@color/gray_600"
+            android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@id/tv_reservation_time"
             app:layout_constraintTop_toBottomOf="@id/tv_reservation_time" />
 
@@ -122,6 +131,7 @@
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginTop="4dp"
+            setImageUrl="@{model.carbobImageUrl}"
             android:src="@drawable/charger_default_image"
             app:layout_constraintEnd_toStartOf="@id/end_guide_line"
             app:layout_constraintTop_toBottomOf="@id/tv_reservation_total_fee" />
