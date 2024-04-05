@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="viewModel"
-            type="com.softeer.team6four.ui.mypage.charger.MyChargerReservationViewModel" />
+            name="model"
+            type="com.softeer.team6four.data.remote.reservation.model.ChargerReservationInfoModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,6 +33,7 @@
             android:id="@+id/tv_reservation_applicant_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{model.guestNickname}"
             android:textColor="@color/gray_700"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -56,6 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="4dp"
+            android:text='@{model.rentalDate + " | " + model.rentalTime}'
             android:textColor="@color/gray_600"
             app:layout_constraintStart_toEndOf="@id/iv_calendar_icon"
             app:layout_constraintTop_toBottomOf="@id/tv_reservation_applicant_nickname"
@@ -65,6 +67,7 @@
             android:id="@+id/tv_reservation_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text='@{String.valueOf(model.totalFee) + "원"}'
             android:textColor="@color/main_400"
             android:textSize="16sp"
             android:textStyle="bold"
