@@ -359,7 +359,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 homeViewModel.nickname.collect { nickname ->
                     if (nickname.isEmpty()) {
-                        findNavController().popBackStack()
+                        findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
                     }
                 }
             }
