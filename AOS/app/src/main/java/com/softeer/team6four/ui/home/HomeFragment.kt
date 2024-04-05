@@ -111,11 +111,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         setBtnQRScan()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         with(naverMap) {
@@ -163,6 +158,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.mapView.onDestroy()
+        _binding = null
     }
 
     override fun onLowMemory() {
