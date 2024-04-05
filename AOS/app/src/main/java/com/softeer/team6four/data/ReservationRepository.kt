@@ -1,6 +1,5 @@
 package com.softeer.team6four.data
 
-import android.util.Log
 import com.softeer.team6four.data.remote.reservation.model.AvailableTimeTableModel
 import com.softeer.team6four.data.remote.reservation.model.ChargerReservationInfoModel
 import com.softeer.team6four.data.remote.reservation.model.ChargerReservationListModel
@@ -24,7 +23,6 @@ class ReservationRepository @Inject constructor(private val reservationDataSourc
             sortType,
             lastReservationId
         ).map { resource ->
-            Log.i("sortType", "getMyReservationHistory: $sortType")
             when (resource) {
                 is Resource.Success -> {
                     val reservationHistory = resource.data
