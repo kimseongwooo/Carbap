@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/confirm_reservation_body"
+            android:text='@{viewModel.reservationDetail.guestNickname + "님이 카밥 대여 요청을 보냈어요!" }'
             android:textColor="@color/gray_700"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/reservation_date"
+            android:text='@{"대여 날짜 : " + viewModel.reservationDetail.rentalDate}'
             android:textColor="@color/gray_700"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/reservation_time"
+            android:text = '@{"대여 시간 : " + viewModel.reservationDetail.returnTime}'
             android:textColor="@color/gray_700"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/reservation_price"
+            android:text = '@{ "대여 비용 : " + String.valueOf(viewModel.reservationDetail.totalFee) + "원"}'
             android:textColor="@color/main_400"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -81,27 +81,27 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="30dp"
+            android:layout_marginEnd="4dp"
             android:background="@drawable/background_normal_radius_btn"
             android:text="@string/reject_reservation"
             android:textColor="@color/gray_600"
             app:backgroundTint="@color/gray_050"
             app:layout_constraintEnd_toStartOf="@id/btn_approve_reservation"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_reservation_price"
-            android:layout_marginEnd="4dp"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_reservation_price" />
 
         <Button
             android:id="@+id/btn_approve_reservation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/background_normal_radius_btn"
             android:text="@string/approve_reservation"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/btn_reject_reservation"
-            app:layout_constraintTop_toBottomOf="@id/tv_reservation_price"
-            android:layout_marginStart="4dp" />
+            app:layout_constraintTop_toBottomOf="@id/tv_reservation_price" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
