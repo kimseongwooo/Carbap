@@ -5,8 +5,8 @@ import androidx.databinding.BindingAdapter
 import coil.load
 
 @BindingAdapter("imageUrl")
-fun setImageUrl(imageView : ImageView, url : String?) {
-    if (!url.isNullOrEmpty()) {
+fun setImageUrl(imageView : ImageView, url : String) {
+    if (url.isNotEmpty()) {
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         imageView.load(url)
     }

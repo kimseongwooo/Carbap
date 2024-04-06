@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.softeer.team6four.ui.mypage.register.RegisterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,6 +65,7 @@
                     android:textColor="@color/gray_700"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    android:text="@{viewModel.chargerNickname}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="카밥 닉네임" />
@@ -85,6 +88,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_500"
                     android:textStyle="bold"
+                    android:text="@{viewModel.addressText}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_charger_location_title"
                     app:layout_constraintStart_toEndOf="@id/tv_charger_location_title"
                     app:layout_constraintTop_toTopOf="@id/tv_charger_location_title"
@@ -108,6 +112,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_500"
                     android:textStyle="bold"
+                    android:text='@{viewModel.price + "원/kwh"}'
                     app:layout_constraintBottom_toBottomOf="@id/tv_charger_price_title"
                     app:layout_constraintStart_toEndOf="@id/tv_charger_price_title"
                     app:layout_constraintTop_toTopOf="@id/tv_charger_price_title"
@@ -154,6 +159,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_500"
                     android:textStyle="bold"
+                    android:text="@{viewModel.chargerTypeText}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_charger_type_title"
                     app:layout_constraintStart_toEndOf="@id/tv_charger_type_title"
                     app:layout_constraintTop_toTopOf="@id/tv_charger_type_title"
@@ -177,6 +183,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_500"
                     android:textStyle="bold"
+                    android:text="@{viewModel.speedTypeText}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_charger_speed_title"
                     app:layout_constraintStart_toEndOf="@id/tv_charger_speed_title"
                     app:layout_constraintTop_toTopOf="@id/tv_charger_speed_title"
@@ -200,6 +207,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_500"
                     android:textStyle="bold"
+                    android:text="@{viewModel.installTypeText}"
                     app:layout_constraintBottom_toBottomOf="@id/tv_charger_install_type_title"
                     app:layout_constraintStart_toEndOf="@id/tv_charger_install_type_title"
                     app:layout_constraintTop_toTopOf="@id/tv_charger_install_type_title"
@@ -246,6 +254,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_600"
                     android:textStyle="bold"
+                    android:text='@{String.format("%2d", viewModel.startDateTime) + ":00"}'
                     app:layout_constraintBottom_toBottomOf="@id/tv_start_time_title"
                     app:layout_constraintStart_toEndOf="@id/tv_start_time_title"
                     app:layout_constraintTop_toTopOf="@id/tv_start_time_title"
@@ -269,6 +278,7 @@
                     android:layout_marginStart="16dp"
                     android:textColor="@color/gray_600"
                     android:textStyle="bold"
+                    android:text='@{String.format("%2d", viewModel.endDateTime) + ":00"}'
                     app:layout_constraintBottom_toBottomOf="@id/tv_end_time_title"
                     app:layout_constraintStart_toEndOf="@id/tv_end_time_title"
                     app:layout_constraintTop_toTopOf="@id/tv_end_time_title"
@@ -304,6 +314,7 @@
                     android:layout_marginTop="12dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/charger_default_image"
+                    imageUrl="@{viewModel.imageUrl}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_charger_upload_image_title"
                     app:shapeAppearance="@style/roundedImageViewStyle" />

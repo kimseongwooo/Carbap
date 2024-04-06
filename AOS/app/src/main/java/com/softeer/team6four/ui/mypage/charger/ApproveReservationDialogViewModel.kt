@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softeer.team6four.data.Resource
-import com.softeer.team6four.data.local.UserPreferencesRepository
-import com.softeer.team6four.data.remote.reservation.ReservationRepository
+import com.softeer.team6four.data.UserPreferencesRepository
+import com.softeer.team6four.data.ReservationRepository
+import com.softeer.team6four.data.remote.charger.model.ApproveReservationDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,12 +15,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class ReservationDetail(
-    val guestNickname: String = "",
-    val rentalDate: String = "",
-    val returnTime: String = "",
-    val totalFee: Int = 0
-)
 
 @HiltViewModel
 class ApproveReservationDialogViewModel @Inject constructor(
@@ -29,8 +24,8 @@ class ApproveReservationDialogViewModel @Inject constructor(
     private val _reservationId: MutableStateFlow<Int> = MutableStateFlow(0)
     val reservationId: StateFlow<Int> = _reservationId
 
-    private val _reservationDetail: MutableStateFlow<ReservationDetail> = MutableStateFlow(ReservationDetail())
-    val reservationDetail: StateFlow<ReservationDetail> = _reservationDetail
+    private val _reservationDetail: MutableStateFlow<ApproveReservationDetail> = MutableStateFlow(ApproveReservationDetail())
+    val reservationDetail: StateFlow<ApproveReservationDetail> = _reservationDetail
 
     private val _updateResult = MutableStateFlow(false)
     val updateResult: StateFlow<Boolean> = _updateResult
@@ -40,7 +35,7 @@ class ApproveReservationDialogViewModel @Inject constructor(
     }
 
     fun updateReservationDetail(guestNickname: String, rentalDate: String, rentalTime: String, totalFee: Int) {
-        _reservationDetail.value = ReservationDetail(guestNickname, rentalDate, rentalTime, totalFee)
+        _reservationDetail.value = ApproveReservationDetail(guestNickname, rentalDate, rentalTime, totalFee)
     }
 
     fun updateReservationState(reservationId: Int, stateType: String) {

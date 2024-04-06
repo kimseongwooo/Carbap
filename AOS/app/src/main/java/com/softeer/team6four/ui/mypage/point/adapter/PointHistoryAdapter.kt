@@ -9,27 +9,19 @@ import com.softeer.team6four.databinding.PointHistoryItemBinding
 import com.softeer.team6four.databinding.ProgressBarItemBinding
 
 class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val VIEW_TYPE_ITEM = 0
-    private val VIEW_TYPE_LOADING = 1
-    private val pointHistoryList = ArrayList<PointHistoryDetailModel>()
+    private val pointHistoryList = mutableListOf<PointHistoryDetailModel>()
 
-    class PointHistoryViewHolder(private val binding: PointHistoryItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class PointHistoryViewHolder(private val binding: PointHistoryItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(detailModel: PointHistoryDetailModel) {
-            binding.tvPointChargeDate.text = detailModel.createdDate
-            binding.tvChargerTitle.text = detailModel.pointTitle
-            binding.tvChargerPrice.text = detailModel.amount
+            binding.model = detailModel
         }
     }
 
-    class LoadingViewHolder(private val binding: ProgressBarItemBinding) : RecyclerView.ViewHolder(binding.root) {
-
-    }
-
+    class LoadingViewHolder(binding: ProgressBarItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
     override fun getItemViewType(position: Int): Int {
-        Log.i("test", "getItemViewType: ${pointHistoryList[position].paymentId}")
-
-        return when (pointHistoryList[position].paymentId)
-        {
+        return when (pointHistoryList[position].paymentId) {
             0 -> VIEW_TYPE_LOADING
             else -> VIEW_TYPE_ITEM
         }
@@ -42,6 +34,7 @@ class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 val binding = PointHistoryItemBinding.inflate(layoutInflater, parent, false)
                 PointHistoryViewHolder(binding)
             }
+
             else -> {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ProgressBarItemBinding.inflate(layoutInflater, parent, false)
@@ -53,8 +46,6 @@ class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is PointHistoryViewHolder) {
             holder.bind(pointHistoryList[position])
-        } else {
-
         }
     }
 
@@ -77,6 +68,22 @@ class PointHistoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun getLastPointHistoryId(): Long? {
         return pointHistoryList.lastOrNull()?.paymentId?.toLong()
+    }
+
+    fun setProgressbar(refreshState: Boolean) {
+        if (refreshState) pointHistoryList.clear()
+        pointHistoryList.add(
+            PointHistoryDetailModel
+                ("", "", 0, "", "", 0)
+        )
+        notifyDataSetChanged()
+        Log.d("setProgressbar", "true")
+    }
+
+
+    companion object {
+        private const val VIEW_TYPE_ITEM = 0
+        private const val VIEW_TYPE_LOADING = 1
     }
 
 }

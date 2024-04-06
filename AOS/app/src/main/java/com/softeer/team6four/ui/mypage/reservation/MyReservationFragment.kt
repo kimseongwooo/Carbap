@@ -1,6 +1,7 @@
 package com.softeer.team6four.ui.mypage.reservation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.softeer.team6four.R
+import com.softeer.team6four.data.Resource
+import com.softeer.team6four.data.remote.reservation.model.ReservationInfoListModel
 import com.softeer.team6four.databinding.FragmentMyReservationBinding
 import com.softeer.team6four.ui.mypage.reservation.adapter.ReservationHistoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -38,77 +43,80 @@ class MyReservationFragment : Fragment() {
             viewModel = myReservationViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            var count = 0;
+            ibBack.setOnClickListener {
+                findNavController().popBackStack()
+            }
 
             val adapter = ReservationHistoryAdapter()
             binding.rvReservationList.adapter = adapter
 
-            val layoutManager = LinearLayoutManager(context)
-            binding.rvReservationList.layoutManager = layoutManager
-
-            var sortType = "WAIT"
-            myReservationViewModel.fetchMyReservationHistory(sortType)
+            myReservationViewModel.fetchMyReservationHistory()
             binding.rvReservationList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
                     val lastVisibleItemPosition =
                         (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
-                    val itemTotalCount = recyclerView.adapter!!.itemCount-1
+                    val itemTotalCount = recyclerView.adapter!!.itemCount - 1
 
                     if (!binding.rvReservationList.canScrollVertically(1)
                         && lastVisibleItemPosition == itemTotalCount
-                        && !myReservationViewModel.isLoading.value) {
-                        count++
-                        myReservationViewModel.fetchMyReservationHistory(sortType, adapter.getLastReservationHistoryId())
+                        && myReservationViewModel.myReservationHistory.value is Resource.Success
+                    ) {
+                        if ((myReservationViewModel.myReservationHistory.value
+                                    as Resource.Success<ReservationInfoListModel>).data.hasNext
+                        ) {
+                            myReservationViewModel.fetchMyReservationHistory(
+                                adapter.getLastReservationHistoryId()
+                            )
+                        }
                     }
                 }
             })
 
             reservationStateChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
                 val checkedId = checkedIds[0]
-                sortType = when (checkedId) {
-                    R.id.btn_reservation_wait -> "WAIT"
-                    R.id.btn_reservation_approve -> "APPROVE"
-                    R.id.btn_reservation_reject -> "REJECT"
-                    else -> "WAIT"
-                }
-                adapter.clearReservationHistoryList()
-                myReservationViewModel.fetchMyReservationHistory(sortType)
-
-                binding.rvReservationList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-
-                        val lastVisibleItemPosition =
-                            (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
-                        val itemTotalCount = recyclerView.adapter!!.itemCount-1
-
-                        if (!binding.rvReservationList.canScrollVertically(1)
-                            && lastVisibleItemPosition == itemTotalCount
-                            && !myReservationViewModel.isLoading.value) {
-                            count++
-                            myReservationViewModel.fetchMyReservationHistory(sortType, adapter.getLastReservationHistoryId())
-                        }
+                myReservationViewModel.updateSortType(
+                    when (checkedId) {
+                        R.id.btn_reservation_wait -> "WAIT"
+                        R.id.btn_reservation_approve -> "APPROVE"
+                        R.id.btn_reservation_reject -> "REJECT"
+                        else -> "WAIT"
                     }
-                })
+                )
+                if (myReservationViewModel.myReservationHistory.value is Resource.Success) {
+                    adapter.clearReservationHistoryList()
+                }
+                myReservationViewModel.fetchMyReservationHistory()
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    myReservationViewModel.myReservationHistory.collect { reservationHistoryList ->
-                        if (reservationHistoryList.isEmpty() && count == 0) {
-                            binding.rvReservationList.visibility = View.GONE
-                            binding.ivEmptyState.visibility = View.VISIBLE
-                            binding.tvEmptyPointHistory.visibility = View.VISIBLE
-                        } else {
-                            adapter.setReservationHistoryList(reservationHistoryList)
-                            if (reservationHistoryList.isNotEmpty() && reservationHistoryList.last().reservationId != 0) {
+                    myReservationViewModel.myReservationHistory.collectLatest { reservationHistoryList ->
+                        Log.d("reservationHistory", reservationHistoryList.toString())
+                        when (reservationHistoryList) {
+                            is Resource.Success -> {
+                                val list = reservationHistoryList.data.content
                                 adapter.removeLoadingFooter()
+                                adapter.setReservationHistoryList(list)
+                                if (adapter.itemCount == 0) {
+                                    binding.ivEmptyState.visibility = View.VISIBLE
+                                    binding.tvEmptyPointHistory.visibility = View.VISIBLE
+                                } else {
+                                    binding.ivEmptyState.visibility = View.INVISIBLE
+                                    binding.tvEmptyPointHistory.visibility = View.INVISIBLE
+                                }
                             }
-                            binding.rvReservationList.visibility = View.VISIBLE
-                            binding.ivEmptyState.visibility = View.GONE
-                            binding.tvEmptyPointHistory.visibility = View.GONE
+
+                            is Resource.Loading -> {
+                                adapter.setProgressbar()
+                                binding.ivEmptyState.visibility = View.INVISIBLE
+                                binding.tvEmptyPointHistory.visibility = View.INVISIBLE
+                            }
+
+                            is Resource.Error -> {
+                                Log.e("ReservationHistory", reservationHistoryList.message)
+                            }
                         }
                     }
                 }
@@ -116,8 +124,8 @@ class MyReservationFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }

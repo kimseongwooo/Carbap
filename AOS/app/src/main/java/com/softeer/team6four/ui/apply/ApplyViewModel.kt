@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softeer.team6four.data.Resource
-import com.softeer.team6four.data.local.UserPreferencesRepository
-import com.softeer.team6four.data.remote.reservation.ReservationRepository
+import com.softeer.team6four.data.UserPreferencesRepository
+import com.softeer.team6four.data.ReservationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -95,8 +95,10 @@ class ApplyViewModel @Inject constructor(
             val timeDate =
                 SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.value)
 
-            val convertedStartTime = "${timeDate}T${String.format("%02d", startTime.value)}:00:00.000000"
-            val convertedEndTime = "${timeDate}T${String.format("%02d", endTime.value)}:00:00.000000"
+            val convertedStartTime =
+                "${timeDate}T${String.format("%02d", startTime.value)}:00:00.000000"
+            val convertedEndTime =
+                "${timeDate}T${String.format("%02d", endTime.value)}:00:00.000000"
 
             Log.d("convertedStartTime", convertedStartTime)
             reservationRepository.postApplyReservation(

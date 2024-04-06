@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.softeer.team6four.R
+import com.softeer.team6four.data.Resource
 import com.softeer.team6four.databinding.FragmentMyChargerListBinding
 import com.softeer.team6four.ui.mypage.charger.adapter.MyChargerListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,9 +21,10 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyChargerListFragment : Fragment() {
-    private var _binding : FragmentMyChargerListBinding? = null
+    private var _binding: FragmentMyChargerListBinding? = null
     private val myChargerListViewModel: MyChargerListViewModel by activityViewModels()
     private val myChargerViewModel: MyChargerViewModel by activityViewModels()
+    private lateinit var myChargerListAdapter: MyChargerListAdapter
     private val binding
         get() = _binding!!
 
@@ -37,7 +39,6 @@ class MyChargerListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBackButton()
-        //Test Code
         binding.ibFilter.setOnClickListener { myChargerListViewModel.updateFilterState() }
         binding.tvCurrentFilter.setOnClickListener { myChargerListViewModel.updateFilterState() }
 
@@ -45,20 +46,13 @@ class MyChargerListFragment : Fragment() {
             viewModel = myChargerListViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            var count = 0;
-
-            val adapter = MyChargerListAdapter { idAndNickname ->
+            myChargerListAdapter = MyChargerListAdapter { idAndNickname ->
                 myChargerViewModel.updateChargerId(idAndNickname.first)
                 myChargerViewModel.updateChargerNickname(idAndNickname.second)
                 findNavController().navigate(R.id.action_myChargerListFragment_to_myChargerFragment)
             }
-            binding.rvMyChargerList.adapter = adapter
+            binding.rvMyChargerList.adapter = myChargerListAdapter
 
-            val layoutManager = LinearLayoutManager(context)
-            binding.rvMyChargerList.layoutManager = layoutManager
-
-            adapter.clearMyChargerList()
-            myChargerListViewModel.fetchMyChargerList(myChargerListViewModel.filterState.value)
 
             binding.rvMyChargerList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -66,16 +60,16 @@ class MyChargerListFragment : Fragment() {
 
                     val lastVisibleItemPosition =
                         (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
-                    val itemTotalCount = recyclerView.adapter!!.itemCount-1
+                    val itemTotalCount = recyclerView.adapter!!.itemCount - 1
 
                     if (!binding.rvMyChargerList.canScrollVertically(1)
                         && lastVisibleItemPosition == itemTotalCount
-                        && !myChargerListViewModel.isLoading.value) {
-                        count++
+                        && !myChargerListViewModel.finishState.value
+                    ) {
                         myChargerListViewModel.fetchMyChargerList(
                             myChargerListViewModel.filterState.value,
-                            adapter.getLastChargerIdAndReservationCount().first,
-                            adapter.getLastChargerIdAndReservationCount().second
+                            myChargerListAdapter.getLastChargerIdAndReservationCount().first,
+                            myChargerListAdapter.getLastChargerIdAndReservationCount().second
                         )
                     }
                 }
@@ -84,7 +78,7 @@ class MyChargerListFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     myChargerListViewModel.filterState.collect { filterState ->
-                        adapter.clearMyChargerList()
+                        myChargerListAdapter.clearMyChargerList()
                         myChargerListViewModel.fetchMyChargerList(filterState)
                     }
                 }
@@ -94,18 +88,22 @@ class MyChargerListFragment : Fragment() {
                 viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
                     myChargerListViewModel.myChargerList.collect { myChargerList ->
-                        if (myChargerList.isEmpty() && count == 0) {
-                            binding.rvMyChargerList.visibility = View.GONE
-                            binding.ivEmptyState.visibility = View.VISIBLE
-                            binding.tvEmptyPointHistory.visibility = View.VISIBLE
-                        } else {
-                            adapter.setMyChargerList(myChargerList)
-                            if (myChargerList.isNotEmpty() && myChargerList.last().carbobId != 0) {
-                                adapter.removeLoadingFooter()
+                        if (myChargerList is Resource.Loading) {
+                            myChargerListViewModel.updateRefreshState(false)
+                        } else if (myChargerList is Resource.Success) {
+                            myChargerListAdapter.removeLoadingFooter()
+                            myChargerListAdapter.setMyChargerList(myChargerList.data.content)
+                            myChargerListViewModel.updateFinishState(!myChargerList.data.hasNext)
+
+                            if (myChargerListAdapter.itemCount == 0) {
+                                binding.rvMyChargerList.visibility = View.VISIBLE
+                                binding.ivEmptyState.visibility = View.VISIBLE
+                                binding.tvEmptyPointHistory.visibility = View.VISIBLE
+                            } else {
+                                binding.rvMyChargerList.visibility = View.VISIBLE
+                                binding.ivEmptyState.visibility = View.INVISIBLE
+                                binding.tvEmptyPointHistory.visibility = View.INVISIBLE
                             }
-                            binding.rvMyChargerList.visibility = View.VISIBLE
-                            binding.ivEmptyState.visibility = View.GONE
-                            binding.tvEmptyPointHistory.visibility = View.GONE
                         }
                     }
                 }
@@ -117,8 +115,8 @@ class MyChargerListFragment : Fragment() {
         binding.ibBack.setOnClickListener { findNavController().popBackStack() }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
